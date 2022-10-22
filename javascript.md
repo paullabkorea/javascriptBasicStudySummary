@@ -1,6 +1,6 @@
 # 자바스크립트
 
--   HTML은 콘텐츠와 골격, CSS는 웹페이지의 레이아웃, JavaScript는 웹페이지의 동작
+-   HTML은 콘텐츠와 골격, CSS는 웹페이지의 레이아웃, JavaScript(Brendan Eich, 브레덴 아이크, Netscape에 있었을 당시 개발)는 웹페이지의 동작
     -   ES1 (초판, 1997)
     -   ES2 (1998)
     -   ES3 (1999)
@@ -9,6 +9,7 @@
     -   ES7 (2016, ECMAScript 2016, 이하 생략)
     -   ES6 부터 `const`, `let`, `Promise`, `Arrow function`, `class` 등의 문법들이 대거 추가
     -   ECMA-인터내셔널 공식 사이트 : https://www.ecma-international.org/
+    -   wiki : https://en.wikipedia.org/wiki/ECMAScript
 
 ## 수업 환경 설정
 
@@ -61,16 +62,53 @@
 
 1. 문(statement)은 세미콜론으로 구분(세미콜론을 붙이지 않는 곳도 있습니다.)
 2. 문은 값, 연산자, 키워드, 명령어, 표현식(값으로 평가, 함수나 key, index를 통한 값의 호출도 표현식) 등으로 구성됩니다.
-3. 공백 병합
+3. 공백 병합 :
+    1. 함수나 메서드 내 공백 병합
+    2. object 형 자료형 내 공백 병합
+    3. 선언식에서의 공백 병합
+    4. 메서드 채이닝의 공백 병합
+    5. 주의 : ''작은 따옴표, ""큰 따옴표는 개행 공백을 인식하지 못함 -> ``백틱, 템플릿 리터럴은 개행 공백을 인식함
 
 ```js
+// 1번
+console.log(1 +
+           2 +
+           3)
+console.log(1,
+           2,
+           3)
+
+// 2번
+[10,
+ 20,
+ 30]
+{
+    'one'  :1,
+    'two'  :2,
+    'three':3
+}
+
+// 3번
 let x = 10,
     y = 20,
     z = 30;
 console.log(x, y, z);
-// .a()
-// .b()
-// .c()
+
+// 4번
+[1, 2, 3]
+    .map(x=>x*2)
+    .map(x=>x*2)
+    .map(x=>x*2)
+    .map(x=>x*2)
+
+// 5번
+// error
+// console.log('abc
+//             abc
+//             ')
+console.log(`abc
+            abc
+            `)
 ```
 
 4. 주석
@@ -88,10 +126,26 @@ console.log(x, y, z);
 -   이러한 문법들은 기존 코드의 문제를 불러일으킬 수 있기 때문에 use strict라는 지시자를 통해 엄격모드를 활성화 했을 때에만 반영
 -   class 문법의 경우 엄격 모드가 기본
 -   함수별로 엄격모드를 다르게 적용할 수 있으나 혼란을 야기할 수 있습니다.
+-   변수 선언 키워드를 반드시 사용, delete 키워드 사용 불가
 
 ```js
 "use strict";
 // 코드
+```
+
+```html
+<script>
+    "use strict";
+    a = 10; // error
+    console.log(age);
+</script>
+```
+
+```html
+<script>
+    a = 10; // error 아님!
+    console.log(age);
+</script>
 ```
 
 # 변수
@@ -117,11 +171,23 @@ console.log(x, y, z);
     -   var(ES5 이전, 지금 사용 권장 X) : 함수 레벨 스코프, 재선언시 애러 X
     -   let(ES5) : 블록 레벨 스코프, 재선언시 애러 O, 콘솔에서는 애러 X, 변경가능한 자료형
     -   const(ES5) : 블록 레벨 스코프, 재선언시 애러 O, 콘솔에서는 애러 X, 변경이 불가능한 자료형(상수)
+        -   모든 변수는 const를 사용하고, let을 꼭 사용해야 하는 변수에서만 let을 사용하길 권고합니다.
+        ```js
+        function hello() {
+            const x = 10;
+            // 1000줄의 코드
+            return x * 1000;
+        }
+        ```
+        -   DOM을 탐색해야 하는 경우 const를 사용하고, (간혹) $를 하는 경우도 있습니다. 반복문이나 함수 밖에서 주로 사용합니다.
+        ```js
+        const $helloElement = document.getElementById("hello");
+        ```
 
 # 연산
 
 -   산술 연산자(+, -, /, \*, \*\*, %)
--   할당 연산자(=, +=, -=, /=, \*=, \*\*=, %=)
+-   (복합) 할당 연산자(=, +=, -=, /=, \*=, \*\*=, %=)
 -   논리 연산자(&&, ||, !, !!, &, |)
 
     -   참 -> true -> 1
@@ -130,6 +196,11 @@ console.log(x, y, z);
     -   ||는 합
     -   !는 부정
     -   암기코드
+
+    ```js
+    // 할당연산자 체이닝(권하지 않습니다.)
+    a = b = c = 2 + 2;
+    ```
 
     ```js
     for (let x = 0; x < 100; x++) {
@@ -154,8 +225,27 @@ console.log(x, y, z);
     ```
 
 -   비교 연산자(>, >=, <, <=, ==, !=, ===, !==)
+
+    -   문자열 비교 : 유니코드 순
+        -   문자열 순서대로 하나씩 비교하고, 문자가 모두 같은데 길이가 다른 경우 길이가 더 긴 것이 크다
+        ```js
+        leehojun > leehojung; // false
+        ```
+    -   다른 형을 가진 값 간의 비교 : 비교하려는 값의 자료형이 다르면 값들을 모두 숫자형으로 변환
+        ```js
+        console.log("2" > 1); // true
+        console.log("01" == 1); // true
+        ```
+    -   null과 undefined 비교하기
+        ```js
+        console.log(null == undefined); // true
+        console.log(null === undefined); // false
+        ```
+    -   에지 케이스(edge case)
+
 -   단항 산술 연산자(++x, x++, --x, x--)
 -   nullish 병합 연산자(??)
+-   비트 연산자(AND - &, OR - |, XOR - ^, NOT - ~, 왼쪽 시프트 - <<, 오른쪽 시프트 - >>, 부호 없는 오른쪽 시프트 - >>> )
 
     ```js
     let result1;
@@ -191,12 +281,20 @@ console.log(x, y, z);
 
 -   Number(숫자)
 
-    -   형태 : 10, 10.123, -10
+    -   형태 : 10, 10.123, -10, Infinity(1/0), -Infinity, NaN("hello"/2)
     -   호출 : 변수명
     -   메서드 :
         -   10.toString()는 안됩니다. 이유는 무엇일까요? 소수점 때문에 그렇습니다.(JavaScript의 parsing때문이고, 아는 분이 많지는 않습니다.)
         -   (10).toString()와 변수명.toString()은 가능합니다.
         -   num.toFixed()
+        ```js
+        num = 10.12345;
+        num.toFixed(3);
+        ("10.123");
+        ```
+        -   Number.MAX_SAFE_INTEGER : JavaScript에서 안전한 최대 정수값
+        -   Number.MIN_SAFE_INTEGER : JavaScript에서 안전한 최소 정수값
+        -   Number.MAX_VALUE : JavaScript가 표현할 수 있는 제일 큰 양의 숫자
     -   Number()
     -   parseInt() - 권고, parseFloat()
 
@@ -218,6 +316,15 @@ console.log(x, y, z);
     -   NaN
     -   Infinity, -Infinity
 
+-   BigInt
+
+    -   (2\*\*53-1)(9007199254740991) 보다 큰 값을 Number로 나타낼 수 없으며, 나타내도 안전한 연산을 할 수 없습니다.
+
+    ```js
+    const big =
+        123123123123123123123123123123123123123123123123123123123123123123n;
+    ```
+
 -   String(문자열)
 
     -   형태 : 'abcde', "abcde", `abcde ${변수명}`
@@ -230,7 +337,7 @@ console.log(x, y, z);
         -   str.slice()
         -   str.split()
         -   str.substring()
-        -   str.substr()
+        -   str.substr() // 비권고 사항, MDN 문서 참고
         -   str.toLowerCase()
         -   str.toUpperCase()
         -   str.trim()
@@ -246,7 +353,7 @@ console.log(x, y, z);
         '5'.repeat(100).split('').map(e => parseInt(e))
         ```
 
--   Boolean(논리값)
+-   Boolean(논리값, 논리형, 분린형)
 
     -   형태 : true, false
     -   호출 : 변수명
@@ -396,6 +503,39 @@ console.log(x, y, z);
     const 교집합 = [...a].filter((x) => b.has(x));
     const 차집합1 = [...a].filter((x) => !b.has(x));
     const 차집합2 = [...b].filter((x) => !a.has(x));
+    ```
+
+# 형변환
+
+-   String 보다는 toString(명시적)
+-   Number 보다는 parseInt(명시적)
+-   명시적 형변환이 아니라 암시적(묵시적) 형변환
+    ```js
+    console.log("6" / "2");
+    console.log("6" * "2");
+    console.log(+"6");
+    console.log(-"6");
+    console.log(Number(undefined));
+    console.log(Number(null));
+    console.log(Number(true));
+    console.log(Number(false));
+    ```
+-   0, null, undefined, NaN, ""은 false이며 그 외의 값은 true입니다.
+-   +를 사용해서 2개 이상을 연산할 때에 하나가 문자열이면 나머지 하나도 문자열로 연산합니다.(뺄셈과 나눗셈, 곱셈의 방식은 다릅니다.)
+    ```js
+    "2" + 2;
+    // '22'
+    2 + "2";
+    // '22'
+    1 + 1 + 3 + "2" + "2";
+    // 522
+    // 덧셈이 아닌 경우에는 다른 결과가 나옵니다
+    2 * "2";
+    // 4
+    "2" * "2";
+    // 4
+    "2" * 2;
+    // 4
     ```
 
 # 조건문과 반복문
