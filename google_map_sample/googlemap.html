@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            #map {
+                height: 400px;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <h3 id="leehojun">My Google Maps Demo</h3>
+        <div id="map"></div>
+        <script src="marker.js"></script>
+        <script>
+            const data = marker;
+            function initMap() {
+                const jeju = { lat: 33.3616658, lng: 126.5204118 };
+                const map = new google.maps.Map(
+                    document.getElementById("map"),
+                    {
+                        zoom: 11,
+                        center: jeju,
+                    }
+                );
+
+                new google.maps.Marker({
+                    position: jeju,
+                    map: map,
+                });
+
+                new google.maps.Marker({
+                    position: { lat: data[0]["lat"], lng: data[0]["lng"] },
+                    map: map,
+                });
+
+                new google.maps.Marker({
+                    position: { lat: data[1]["lat"], lng: data[1]["lng"] },
+                    map: map,
+                });
+
+                new google.maps.Marker({
+                    position: { lat: data[2]["lat"], lng: data[2]["lng"] },
+                    map: map,
+                });
+
+                new google.maps.Marker({
+                    position: { lat: data[3]["lat"], lng: data[3]["lng"] },
+                    map: map,
+                });
+            }
+        </script>
+        <script
+            async
+            defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdKrZSsLIuxHuu59UCARaAvUtcmaMmBeU&callback=initMap"
+        ></script>
+    </body>
+</html>
