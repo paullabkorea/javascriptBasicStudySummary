@@ -505,13 +505,19 @@ function add(a, b) {
 
 -   Map : object
 
-    -   메서드 : set, get, has, delete, size
+    -   메서드 : set, get, has, delete, size, clear, keys, values, entries
 
     ```js
     let map = new Map();
     map.set("one", 100);
     map.set("two", 200);
     map.set("three", 300);
+    map;
+    // Map(3) {'one' => 100, 'two' => 200, 'three' => 300}
+
+    // map = {"one":100, "two":200, "three":300}
+    // map["one"] // object에서만 됩니다.
+
     map.set("four", [10, 20]);
     map.set(5, [100, 200]);
     map.set([1, 2], [100, 200]);
@@ -1706,7 +1712,7 @@ document.body.childNodes[3].childNodes[1];
 
 ```js
 // 해당하는 Id를 가진 요소에 접근하기
-document.getElementById();
+document.getElementById(); // V
 
 // 해당하는 모든 요소에 접근하기
 document.getElementsByTagName();
@@ -1715,22 +1721,24 @@ document.getElementsByTagName();
 document.getElementsByClassName();
 
 // css 선택자로 단일 요소에 접근하기
-document.querySelector("selector");
+document.querySelector("#selector"); // V
+document.querySelector(".selector"); // V
+document.querySelector("h1"); // V
 
 // css 선택자로 여러 요소에 접근하기
 document.querySelectorAll("selector");
 
 // target 요소를 생성합니다.
-document.createElement(target);
+document.createElement(target); // V
 
 // target 텍스트를 생성합니다.
 document.createTextNode(target);
 
 // target 요소를 element의 자식으로 위치합니다.
-element.appendChild(target);
+element.appendChild(target); // V
 
 // element의 target 자식 요소를 제거합니다.
-element.removeChild(target);
+element.removeChild(target); // V
 ```
 
 ```js
@@ -1756,4 +1764,76 @@ console.log(cont.parentElement); // 부모 요소를 찾습니다.
 
 // 브라우저의 기본 이벤트 동작을 취소
 event.preventDefault();
+```
+
+```js
+// 1
+let 제목 = document.createElement('h1')
+제목.innerText = 'hello world'
+document.body.append(제목)
+
+// 2
+for (let i = 0; i < 10; i++) {
+    let 내용 = document.createElement('p')
+    내용.innerText = 'hello world'
+    document.body.append(내용)
+}
+
+// 3
+let 컨테이너 = document.createElement('div')
+컨테이너.classList.add('one')
+컨테이너.classList.add('two')
+// 컨테이너.classList.add('three four')
+컨테이너.classList.remove('one')
+for (let i = 0; i < 10; i++) {
+    내용 = document.createElement('p')
+    내용.innerText = 'hello world'
+    컨테이너.append(내용)
+}
+document.body.append(컨테이너)
+
+// 콘솔창에서 실행
+컨테이너.classList
+// DOMTokenList(2) ['one', 'two', value: 'one two']
+컨테이너.classList.remove('two')
+
+컨테이너.classList.toggle('four')
+// true
+컨테이너.classList.toggle('four')
+// false
+
+// 직접 attribute를 컨트롤
+컨테이너.getAttribute('class')
+// 'one four'
+컨테이너.hasAttribute('class')
+// true
+
+// 기존에 있었던 class는 날아갑니다.
+컨테이너.setAttribute('class', 'five six')
+컨테이너.setAttribute('class', '')
+
+
+// 4
+// https://test.api.weniv.co.kr/mall
+// test.api.weniv.co.kr/asset/img/1/thumbnailImg.jpg
+fetch('https://test.api.weniv.co.kr/mall')
+    .then(r => r.json())
+    .then(r => {
+        console.log(r)
+        for (const item of r) {
+
+            const 상품이름 = document.createElement('h3')
+            상품이름.innerText = item.productName
+
+            const 이미지 = document.createElement('img')
+            이미지.setAttribute('src', 'https://test.api.weniv.co.kr/' + item.thumbnailImg)
+
+            const 가격 = document.createElement('p')
+            가격.innerText = item.price
+            
+            document.body.append(상품이름)
+            document.body.append(이미지)
+            document.body.append(가격)
+        }
+    })
 ```

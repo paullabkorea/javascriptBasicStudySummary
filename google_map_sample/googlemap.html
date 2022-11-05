@@ -19,13 +19,18 @@
                 const map = new google.maps.Map(
                     document.getElementById("map"),
                     {
-                        zoom: 11,
+                        zoom: 10,
                         center: jeju,
                     }
                 );
 
                 new google.maps.Marker({
                     position: jeju,
+                    map: map,
+                });
+
+                new google.maps.Marker({
+                    position: { lat: 33.478135, lng: 126.57017 },
                     map: map,
                 });
 
